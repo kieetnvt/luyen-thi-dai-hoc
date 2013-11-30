@@ -4,32 +4,41 @@
  */
 
 var express = require('express');
-var routes = require('./routes');
-var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
 
-var app = express();
+global.app = express();
 
+// App config
+app.config = require('./config/config');
 // all environments
-app.set('port', process.env.PORT || 3001);
+app.set('port', app.config.node.port || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.favicon());
-app.use(express.logger('dev'));
-app.use(express.bodyParser());
+app.use(express.json());
+app.use(express.urlencoded());
+
+app.use(express.cookieParser('shhhh, very secret'));//before line
+app.use(express.session());//after line - must
+app.use(express.urlencoded());
 app.use(express.methodOverride());
 app.use(app.router);
-app.use(require('stylus').middleware(path.join(__dirname, 'public')));
+
+
+// other statics
 app.use(express.static(path.join(__dirname, 'public')));
 
-// development only
-if ('development' == app.get('env')) {
-  app.use(express.errorHandler());
-}
+// App routes
+require('./lib/app/model-loader');
+require('./lib/app/controller-loader');
+require('./routes/routes');
 
-app.get('/', routes.index);
-app.get('/users', user.list);
+// development only
+app.use(express.logger('dev'));
+if ('development' == app.get('env')) {
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+}
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
