@@ -4,10 +4,6 @@
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
     // <script type="text/javascript">
     // $.ajax({
     //   url:'http://luyenthiservices.aws.af.cm/',
@@ -19,5 +15,31 @@
     //   }
     // });
     // </script>
+    <script type="text/javascript">
+        function getQuestion(){
+            $.ajax({
+                url:"http://luyenthiservices.aws.af.cm/lay-cau-hoi",
+                type:'get',
+                crossDomain:true,
+                dataType:'jsonp',
+                success:function(data){
+                    console.log(data[0]);
+                    $('#result').append('<p>'+data[0].subject+'</p>');
+                    $('#result').append('<p>'+data[0].question+'</p>');
+                    $('#result').append('<p>'+data[0].a+'</p>');
+                    $('#result').append('<p>'+data[0].b+'</p>');
+                    $('#result').append('<p>'+data[0].c+'</p>');
+                    $('#result').append('<p>'+data[0].d+'</p>');
+                    $('#result').append('<p> Result : '+data[0].right.choose+":"+data[0].right.result+'</p>');
+                }
+            });
+        };
+    </script>
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <p>Welcome to <%= title %></p>
+    <div id="result"></div>
+    <button onclick="getQuestion()">Get Questions</button>
   </body>
 </html>
